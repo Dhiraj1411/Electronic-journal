@@ -1,0 +1,15 @@
+<app-navbar></app-navbar>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" [(opened)]="opened">
+
+   <app-sidenav></app-sidenav>
+
+</mat-sidenav>
+<mat-sidenav-content>
+  <div class="router-wrapper">
+  <router-outlet></router-outlet>
+</div>
+</mat-sidenav-content>
+</mat-sidenav-container>
+
+<app-loader></app-loader>

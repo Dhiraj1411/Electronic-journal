@@ -1,0 +1,6 @@
+<mat-card class="default-card">
+  <mat-card-content>
+    <p *ngIf="selected && selected.start && selected.end">Selected Range from {{selected.start.date | moment:'DD-MM-YYYY HH:mm'}} to {{selected.end.date | moment:'DD-MM-YYYY HH:mm'}} </p>
+    <app-linechart *ngIf="drawLinechart" [data]="graphValues"></app-linechart>
+  </mat-card-content>
+</mat-card>

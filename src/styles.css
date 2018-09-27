@@ -1,0 +1,41 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+
+*{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+} 
+body{
+    padding-top: 64px;
+    empty-cells: show;
+}
+
+.default-card{
+    min-height: calc(100vh - 95px);
+    box-sizing: border-box;
+}
+
+
+
+
+.line {
+    fill: none;
+    stroke: #ffab00;
+    stroke-width: 3;
+}
+  
+.overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+/* Style the dots by assigning a fill and stroke */
+.dot {
+    fill: #ffab00;
+    stroke: #fff;
+}
+  
+  .focus circle {
+  fill: none;
+  stroke: steelblue;
+}

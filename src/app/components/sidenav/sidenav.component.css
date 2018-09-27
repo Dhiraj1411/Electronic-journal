@@ -1,0 +1,20 @@
+mat-card{
+    background: #fff;
+    height:calc(100vh - 112px);
+}
+
+.time-dropdowns{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.time-dropdowns mat-form-field{
+    width: 90px;
+}
+
+.submit-btn-wrapper{
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}

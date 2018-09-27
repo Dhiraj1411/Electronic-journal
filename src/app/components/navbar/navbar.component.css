@@ -1,0 +1,21 @@
+#main-navbar{
+    background-color: #004c91;
+    border-bottom: 4px solid #ffc220;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#main-navbar .site-title{
+    color:#fff;
+}
+
+#main-navbar .mat-icon{
+    color: #fff;
+    margin-top: 10px;
+}
