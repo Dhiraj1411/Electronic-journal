@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { SidebarSubmitBtnClickService } from '../../helpers/sidebar-submit-btn-click.service';
 import { TimelineService } from '../../services/timeline.service';
 import * as _ from 'lodash';
@@ -17,6 +17,7 @@ export class HomeComponent implements OnInit {
   selected: any;
   graphValues: any = [];
   drawLinechart: Boolean = false;
+  @ViewChild('nvd3LineGraph') nvd3LineGraph: any;
   constructor(private ssbcs: SidebarSubmitBtnClickService, private ts: TimelineService) { }
 
   ngOnInit() {
@@ -34,8 +35,8 @@ export class HomeComponent implements OnInit {
           bottom: 40,
           left: 55
         },
-        x: function (d) { return d.x; },
-        y: function (d) { return d.y; },
+        x: function (d) { return d.date; },
+        y: function (d) { return d.value; },
         useInteractiveGuideline: true,
         dispatch: {
           stateChange: function (e) { console.log('stateChange'); },
@@ -44,14 +45,18 @@ export class HomeComponent implements OnInit {
           tooltipHide: function (e) { console.log('tooltipHide'); }
         },
         xAxis: {
-          axisLabel: 'Time (ms)'
+          axisLabel: 'Time (ms)',
+          tickFormat: function (d) {
+            return d3.time.format('%H:%M')(new Date(d));
+          },
+          ticks: 24
         },
         yAxis: {
-          axisLabel: 'Voltage (v)',
+          axisLabel: 'Transactions',
           tickFormat: function (d) {
-            return d3.format('.02f')(d);
+            return d3.format('.02f')(new Date(d));
           },
-          axisLabelDistance: -10
+          axisLabelDistance: -5
         },
         callback: function (chart) {
           console.log('!!! lineChart callback !!!');
@@ -65,45 +70,11 @@ export class HomeComponent implements OnInit {
 
     this.data = [
       {
-        key: 'Cumulative Return',
+        key: '',
         color: '#2ca02c',
-        values: [
-          {
-            'x': 1,
-            'y': 10
-          },
-          {
-            'x': 2,
-            'y': 20
-          },
-          {
-            'x': 3,
-            'y': 30
-          },
-          {
-            'x': 4,
-            'y': 50
-          },
-          {
-            'x': 5,
-            'y': 50
-          },
-          {
-            'x': 6,
-            'y': 60
-          },
-          {
-            'x': 7,
-            'y': 70
-          },
-          {
-            'x': 8,
-            'y': 80
-          },
-        ]
+        values: []
       }
     ];
-
   }
 
   onSidebarSubmitBtnClick(data) {
@@ -116,15 +87,18 @@ export class HomeComponent implements OnInit {
 
   generateGraphValues(data) {
     this.graphValues = [];
-    let startDate = this.selected.start.date;
+    let startDate = this.selected.start.date['_d'];
     _.each(data, (value) => {
-      const temp = { date: moment(startDate).format(), value: value };
+      const temp = { date: startDate, value: value };
       this.graphValues.push(_.cloneDeep(temp));
-      startDate = moment(startDate).add('1', 'hour').format();
+      const newHour = startDate.getHours() + 1;
+      startDate = startDate.setHours(newHour);
+      startDate = new Date(startDate);
     });
 
+    this.data[0].values = this.graphValues;
+    this.nvd3LineGraph.chart.update();
     this.drawLinechart = true;
   }
-
 
 }

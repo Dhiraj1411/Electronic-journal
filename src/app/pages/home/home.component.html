@@ -3,7 +3,7 @@
     <p *ngIf="selected && selected.start && selected.end">Selected Range from {{selected.start.date | moment:'DD-MM-YYYY HH:mm'}} to {{selected.end.date | moment:'DD-MM-YYYY HH:mm'}} </p>
     <!-- <app-linechart *ngIf="drawLinechart" [data]="graphValues"></app-linechart> -->
 
-    <nvd3 [options]="options" [data]="data"></nvd3>
+    <nvd3 #nvd3LineGraph [options]="options" [data]="data"></nvd3>
 
   </mat-card-content>
 </mat-card>
