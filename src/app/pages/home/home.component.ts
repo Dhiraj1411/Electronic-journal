@@ -46,10 +46,13 @@ export class HomeComponent implements OnInit {
         },
         xAxis: {
           axisLabel: 'Time (ms)',
+          rotateLabels: -20,
+          axisLabelDistance: -35,
+          useInteractiveGuideline: true,
           tickFormat: function (d) {
             return d3.time.format('%H:%M')(new Date(d));
           },
-          ticks: 24
+          tickValues: []
         },
         yAxis: {
           axisLabel: 'Transactions',
@@ -97,6 +100,10 @@ export class HomeComponent implements OnInit {
     });
 
     this.data[0].values = this.graphValues;
+    this.graphValues.forEach(element => {
+      this.options.chart.xAxis.tickValues.push(element['date']);
+    });
+
     this.nvd3LineGraph.chart.update();
     this.drawLinechart = true;
   }
