@@ -73,7 +73,7 @@ export class HomeComponent implements OnInit {
 
     this.data = [
       {
-        key: '',
+        key: 'Transactions',
         color: '#2ca02c',
         values: []
       }
