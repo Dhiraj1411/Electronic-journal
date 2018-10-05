@@ -25,12 +25,12 @@ export class SidenavComponent implements OnInit {
     client: null,
     start: {
       date: this.yesterday.format(),
-      hours: this.hours_now,
+      hours: (parseInt(this.hours_now, 10) + 1).toString(),
       mins: this.minutes_now
     },
     end: {
       date: this.today.format(),
-      hours: this.hours_now - 1,
+      hours: this.hours_now,
       mins: this.minutes_now
     }
   };
