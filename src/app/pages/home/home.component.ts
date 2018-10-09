@@ -56,9 +56,7 @@ export class HomeComponent implements OnInit {
         },
         yAxis: {
           axisLabel: 'Transactions',
-          tickFormat: function (d) {
-            return d3.format('.02f')(new Date(d));
-          },
+          showMaxMin: true,
           axisLabelDistance: -5
         },
         callback: function (chart) {
@@ -88,7 +86,7 @@ export class HomeComponent implements OnInit {
     );
   }
 
-  generateGraphValues(data) {
+  generateGraphValues(data: Array<any>[]) {
     this.graphValues = [];
     let startDate = this.selected.start.date['_d'];
     _.each(data, (value) => {
