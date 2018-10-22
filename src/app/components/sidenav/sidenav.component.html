@@ -15,7 +15,7 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field>
-      <input matInput [matDatepicker]="startDate" placeholder="Choose a start date" [value]="selected.start.date">
+      <input matInput [matDatepicker]="startDate" placeholder="Choose a start date" [(ngModel)]="selected.start.date">
       <mat-datepicker-toggle matSuffix [for]="startDate"></mat-datepicker-toggle>
       <mat-datepicker #startDate></mat-datepicker>
     </mat-form-field>
@@ -38,7 +38,7 @@
       </mat-form-field>
     </div>
     <mat-form-field>
-      <input matInput [matDatepicker]="endDate" placeholder="Choose a end date" [value]="selected.end.date">
+      <input matInput [matDatepicker]="endDate" placeholder="Choose a end date" [(ngModel)]="selected.end.date">
       <mat-datepicker-toggle matSuffix [for]="endDate"></mat-datepicker-toggle>
       <mat-datepicker #endDate></mat-datepicker>
     </mat-form-field>
