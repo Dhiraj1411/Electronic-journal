@@ -54,6 +54,7 @@ export class SidenavComponent implements OnInit {
         this.disableMinuteDropDown = true;
         this.selected.start.mins = this.minutes_now;
         this.selected.end.mins = this.minutes_now;
+        this.selected.start.date = moment().add('-15', 'day').format();
         break;
       }
       case 3: {
