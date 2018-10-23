@@ -34,16 +34,44 @@ export class SidenavComponent implements OnInit {
       mins: this.minutes_now
     }
   };
+  disableHourDropDown: Boolean = false;
+  disableMinuteDropDown: Boolean = false;
   constructor(private ssbcs: SidebarSubmitBtnClickService) { }
 
   ngOnInit() {
-    this.selected.transaction = this.transactions[0].code;
+    this.selected.transaction = this.transactions[1].code;
     this.selected.client = this.clients[0].code;
     this.setTimeValues();
     setTimeout(() => {
       this.onSubmit();
     });
   }
+
+  onTransactionChange() {
+    switch (this.selected.transaction) {
+      case 1: {
+        this.disableHourDropDown = true;
+        this.disableMinuteDropDown = true;
+        this.selected.start.mins = this.minutes_now;
+        this.selected.end.mins = this.minutes_now;
+        break;
+      }
+      case 3: {
+        this.disableHourDropDown = true;
+        this.disableMinuteDropDown = false;
+        this.selected.start.mins = 0;
+        this.selected.end.mins = 59;
+        break;
+      }
+      default: {
+        this.disableHourDropDown = false;
+        this.disableMinuteDropDown = false;
+        this.selected.start.mins = this.minutes_now;
+        this.selected.end.mins = this.minutes_now;
+      }
+    }
+  }
+
   setTimeValues() {
     for (let i = 0; i < 24; i++) {
       let hour = _.toString(i);

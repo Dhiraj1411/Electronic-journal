@@ -1,7 +1,7 @@
 <mat-card>
   <mat-card-content>
     <mat-form-field>
-      <mat-select placeholder="Transaction" [(value)]="selected.transaction">
+      <mat-select placeholder="Transaction" [(ngModel)]="selected.transaction" (selectionChange)='onTransactionChange()'>
         <mat-option *ngFor="let transaction of transactions" [value]="transaction.code">
           {{transaction.text}}
         </mat-option>
@@ -21,7 +21,7 @@
     </mat-form-field>
     <div class="time-dropdowns">
       <mat-form-field>
-        <input type="text" placeholder="Hours" aria-label="Number" matInput [(ngModel)]="selected.start.hours" [matAutocomplete]="startHours">
+        <input type="text" [disabled]="disableHourDropDown" placeholder="Hours" aria-label="Number"  matInput [(ngModel)]="selected.start.hours" [matAutocomplete]="startHours">
         <mat-autocomplete #startHours="matAutocomplete">
           <mat-option *ngFor="let option of hours | autocompleteFilter:selected.start.hours" [value]="option.value">
             {{option.text}}
@@ -29,7 +29,7 @@
         </mat-autocomplete>
       </mat-form-field>
       <mat-form-field>
-        <input type="text" placeholder="Minutes" aria-label="Number" matInput [(ngModel)]="selected.start.mins" [matAutocomplete]="startMins">
+        <input type="text" [disabled]="disableMinuteDropDown" placeholder="Minutes" aria-label="Number" matInput [(ngModel)]="selected.start.mins" [matAutocomplete]="startMins">
         <mat-autocomplete #startMins="matAutocomplete">
           <mat-option *ngFor="let option of mins | autocompleteFilter:selected.start.mins" [value]="option.value">
             {{option.text}}
@@ -44,7 +44,7 @@
     </mat-form-field>
     <div class="time-dropdowns">
       <mat-form-field>
-        <input type="text" placeholder="Hours" aria-label="Number" matInput [(ngModel)]="selected.end.hours" [matAutocomplete]="endHours">
+        <input type="text" [disabled]="disableHourDropDown" placeholder="Hours" aria-label="Number" matInput [(ngModel)]="selected.end.hours" [matAutocomplete]="endHours">
         <mat-autocomplete #endHours="matAutocomplete">
           <mat-option *ngFor="let option of hours | autocompleteFilter:selected.end.hours" [value]="option.value">
             {{option.text}}
@@ -52,7 +52,7 @@
         </mat-autocomplete>
       </mat-form-field>
       <mat-form-field>
-        <input type="text" placeholder="Minutes" aria-label="Number" matInput [(ngModel)]="selected.end.mins" [matAutocomplete]="endMins">
+        <input type="text" [disabled]="disableMinuteDropDown" placeholder="Minutes" aria-label="Number" matInput [(ngModel)]="selected.end.mins" [matAutocomplete]="endMins">
         <mat-autocomplete #endMins="matAutocomplete">
           <mat-option *ngFor="let option of mins | autocompleteFilter:selected.end.mins" [value]="option.value">
             {{option.text}}
