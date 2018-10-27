@@ -12,7 +12,46 @@ declare let d3: any;
 })
 export class HomeComponent implements OnInit {
   options;
-  data;
+  data = [];
+  chartOption = {
+    chart: {
+      type: 'lineChart',
+      height: 400,
+      margin: {
+        top: 20,
+        right: 20,
+        bottom: 40,
+        left: 55
+      },
+      x: function (d) { return d.date; },
+      y: function (d) { return d.value; },
+      useInteractiveGuideline: true,
+      dispatch: {
+        stateChange: function (e) { console.log('stateChange'); },
+        changeState: function (e) { console.log('changeState'); },
+        tooltipShow: function (e) { console.log('tooltipShow'); },
+        tooltipHide: function (e) { console.log('tooltipHide'); }
+      },
+      xAxis: {
+        axisLabel: 'Time (ms)',
+        rotateLabels: -20,
+        axisLabelDistance: -35,
+        useInteractiveGuideline: true
+      },
+      yAxis: {
+        axisLabel: 'Transactions',
+        showMaxMin: true,
+        axisLabelDistance: -5
+      },
+      callback: function (chart) {
+        console.log('!!! lineChart callback !!!');
+      }
+    },
+    title: {
+      enable: true,
+      text: 'Title for Line Chart'
+    }
+  };
 
   selected: any;
   graphValues: any = [];
@@ -25,50 +64,6 @@ export class HomeComponent implements OnInit {
       (data) => this.onSidebarSubmitBtnClick(data)
     );
 
-    this.options = {
-      chart: {
-        type: 'lineChart',
-        height: 400,
-        margin: {
-          top: 20,
-          right: 20,
-          bottom: 40,
-          left: 55
-        },
-        x: function (d) { return d.date; },
-        y: function (d) { return d.value; },
-        useInteractiveGuideline: true,
-        dispatch: {
-          stateChange: function (e) { console.log('stateChange'); },
-          changeState: function (e) { console.log('changeState'); },
-          tooltipShow: function (e) { console.log('tooltipShow'); },
-          tooltipHide: function (e) { console.log('tooltipHide'); }
-        },
-        xAxis: {
-          axisLabel: 'Time (ms)',
-          rotateLabels: -20,
-          axisLabelDistance: -35,
-          useInteractiveGuideline: true,
-          tickFormat: function (d) {
-            return d3.time.format('%H:%M')(new Date(d));
-          },
-          tickValues: []
-        },
-        yAxis: {
-          axisLabel: 'Transactions',
-          showMaxMin: true,
-          axisLabelDistance: -5
-        },
-        callback: function (chart) {
-          console.log('!!! lineChart callback !!!');
-        }
-      },
-      title: {
-        enable: true,
-        text: 'Title for Line Chart'
-      }
-    };
-
     this.data = [
       {
         key: 'Transactions',
@@ -76,6 +71,7 @@ export class HomeComponent implements OnInit {
         values: []
       }
     ];
+
   }
 
   onSidebarSubmitBtnClick(data) {
@@ -87,22 +83,71 @@ export class HomeComponent implements OnInit {
   }
 
   generateGraphValues(data: Array<any>[]) {
+    this.data[0].values = [];
     this.graphValues = [];
     let startDate = this.selected.start.date['_d'];
+    let startMin = 0;
     _.each(data, (value) => {
-      const temp = { date: startDate, value: value };
-      this.graphValues.push(_.cloneDeep(temp));
-      const newHour = startDate.getHours() + 1;
-      startDate = startDate.setHours(newHour);
-      startDate = new Date(startDate);
+
+      switch (this.selected.transaction) {
+        case 1: {
+          const temp = { date: startDate, value: value };
+          this.graphValues.push(_.cloneDeep(temp));
+          const t = moment(startDate);
+          startDate = t.add(1, 'days')['_d'];
+          break;
+        }
+        case 2: {
+          const temp = { date: startDate, value: value };
+          this.graphValues.push(_.cloneDeep(temp));
+          const newHour = startDate.getHours() + 1;
+          startDate = startDate.setHours(newHour);
+          startDate = new Date(startDate);
+          break;
+        }
+        case 3: {
+          if (startMin > 60) {
+            break;
+          }
+          const temp = { date: startMin, value: value };
+          this.graphValues.push(_.cloneDeep(temp));
+          startMin = startMin + 1;
+          break;
+        }
+      }
+
     });
 
+    this.options = _.cloneDeep(this.chartOption);
+    if (this.selected.transaction === 1) {
+
+      this.options.chart.xAxis.tickValues = [];
+      this.options.chart.xAxis.tickFormat = function (d) {
+        return d3.time.format('%d %b')(new Date(d));
+      };
+      this.graphValues.forEach(element => {
+        this.options.chart.xAxis.tickValues.push(element['date']);
+      });
+
+    } else if (this.selected.transaction === 2) {
+
+      this.options.chart.xAxis.tickValues = [];
+      this.options.chart.xAxis.tickFormat = function (d) {
+        return d3.time.format('%H:%M')(new Date(d));
+      };
+
+      this.graphValues.forEach(element => {
+        this.options.chart.xAxis.tickValues.push(element['date']);
+      });
+
+    } else if (this.selected.transaction === 3) {
+      this.options.chart.xAxis.tickFormat = function (d) {
+        return d;
+      };
+    }
+
+    console.log(this.graphValues);
     this.data[0].values = this.graphValues;
-    this.graphValues.forEach(element => {
-      this.options.chart.xAxis.tickValues.push(element['date']);
-    });
-
-    this.nvd3LineGraph.chart.update();
     this.drawLinechart = true;
   }
 
