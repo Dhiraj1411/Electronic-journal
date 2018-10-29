@@ -117,7 +117,7 @@ export class HomeComponent implements OnInit {
       }
 
     });
-
+    
     this.options = _.cloneDeep(this.chartOption);
     if (this.selected.transaction === 1) {
 
@@ -141,12 +141,11 @@ export class HomeComponent implements OnInit {
       });
 
     } else if (this.selected.transaction === 3) {
+      this.options.chart.xAxis.tickValues = [0, 10, 20, 30, 40, 50, 59];
       this.options.chart.xAxis.tickFormat = function (d) {
         return d;
       };
     }
-
-    console.log(this.graphValues);
     this.data[0].values = this.graphValues;
     this.drawLinechart = true;
   }
