@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { SidebarSubmitBtnClickService } from '../../helpers/sidebar-submit-btn-click.service';
 import { TimelineService } from '../../services/timeline.service';
 import * as _ from 'lodash';
@@ -57,7 +58,12 @@ export class HomeComponent implements OnInit {
   graphValues: any = [];
   drawLinechart: Boolean = false;
   @ViewChild('nvd3LineGraph') nvd3LineGraph: any;
-  constructor(private ssbcs: SidebarSubmitBtnClickService, private ts: TimelineService) { }
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private ssbcs: SidebarSubmitBtnClickService,
+    private ts: TimelineService
+  ) { }
 
   ngOnInit() {
     this.ssbcs.sidebarSubmitBtnClick$.subscribe(
@@ -83,6 +89,7 @@ export class HomeComponent implements OnInit {
   }
 
   generateGraphValues(data: Array<any>[]) {
+    this.updateRouteQueryParam();
     this.data[0].values = [];
     this.graphValues = [];
     let startDate = this.selected.start.date['_d'];
@@ -117,7 +124,7 @@ export class HomeComponent implements OnInit {
       }
 
     });
-    
+
     this.options = _.cloneDeep(this.chartOption);
     if (this.selected.transaction === 1) {
 
@@ -148,6 +155,18 @@ export class HomeComponent implements OnInit {
     }
     this.data[0].values = this.graphValues;
     this.drawLinechart = true;
+  }
+
+  updateRouteQueryParam() {
+    const queryParams: Params = Object.assign({}, this.activatedRoute.snapshot.queryParams);
+    if (this.selected.transaction === 1) {
+      queryParams['transaction'] = 'Per_Day';
+    } else if (this.selected.transaction === 2) {
+      queryParams['transaction'] = 'Per_Hour';
+    } else if (this.selected.transaction === 3) {
+      queryParams['transaction'] = 'Per_Minutes';
+    }
+    this.router.navigate(['.'], { queryParams: queryParams });
   }
 
 }
