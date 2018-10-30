@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { HomeTransactionOptions } from '../../hardcoded/home-transaction-options';
 import { HomeClientOptions } from '../../hardcoded/home-client-options';
 import { SidebarSubmitBtnClickService } from '../../helpers/sidebar-submit-btn-click.service';
+import { SideNavService } from '../../services/side-nav.service';
+
 import * as moment from 'moment';
 import * as _ from 'lodash';
 
@@ -13,7 +15,6 @@ import * as _ from 'lodash';
 export class SidenavComponent implements OnInit {
 
   transactions = HomeTransactionOptions;
-  clients = HomeClientOptions;
   hours: any = [];
   mins: any = [];
   today = moment();
@@ -36,11 +37,16 @@ export class SidenavComponent implements OnInit {
   };
   disableHourDropDown: Boolean = false;
   disableMinuteDropDown: Boolean = false;
-  constructor(private ssbcs: SidebarSubmitBtnClickService) { }
+  constructor(
+    private ssbcs: SidebarSubmitBtnClickService,
+    private sideNav: SideNavService
+  ) { }
 
   ngOnInit() {
+    this.sideNav.getClient().subscribe((data) => {
+      this.selected.client = data;
+    });
     this.selected.transaction = this.transactions[1].code;
-    this.selected.client = this.clients[0].code;
     this.setTimeValues();
     setTimeout(() => {
       this.onSubmit();
