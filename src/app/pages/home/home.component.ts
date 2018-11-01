@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
 
   selected: any;
   graphValues: any = [];
-  drawLinechart: Boolean = false;
+  // drawLinechart: Boolean = false;
   @ViewChild('nvd3LineGraph') nvd3LineGraph: any;
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -72,8 +72,23 @@ export class HomeComponent implements OnInit {
 
     this.data = [
       {
-        key: 'Transactions',
+        key: 'Success',
         color: '#2ca02c',
+        values: []
+      },
+      {
+        key: 'Inprogress',
+        color: '#0039e6',
+        values: []
+      },
+      {
+        key: 'Error',
+        color: '#b30000',
+        values: []
+      },
+      {
+        key: 'Total',
+        color: '#990099',
         values: []
       }
     ];
@@ -82,7 +97,6 @@ export class HomeComponent implements OnInit {
 
   onSidebarSubmitBtnClick(data) {
     this.selected = data;
-    this.drawLinechart = false;
     this.ts.getTimeline().subscribe(
       (data1) => this.generateGraphValues(data1)
     );
@@ -90,44 +104,58 @@ export class HomeComponent implements OnInit {
 
   generateGraphValues(data: Array<any>[]) {
     this.updateRouteQueryParam();
-    this.data[0].values = [];
-    this.graphValues = [];
-    let startDate = this.selected.start.date['_d'];
-    let startMin = 0;
-    _.each(data, (value) => {
+    for (const key in data) {
+      if (data.hasOwnProperty(key)) {
 
-      switch (this.selected.transaction) {
-        case 1: {
-          const temp = { date: startDate, value: value };
-          this.graphValues.push(_.cloneDeep(temp));
-          const t = moment(startDate);
-          startDate = t.add(1, 'days')['_d'];
-          break;
-        }
-        case 2: {
-          const temp = { date: startDate, value: value };
-          this.graphValues.push(_.cloneDeep(temp));
-          const newHour = startDate.getHours() + 1;
-          startDate = startDate.setHours(newHour);
-          startDate = new Date(startDate);
-          break;
-        }
-        case 3: {
-          if (startMin > 60) {
-            break;
+        this.graphValues = [];
+        let startDate = this.selected.start.date['_d'];
+        let startMin = 0;
+        _.each(data[key], (value) => {
+          switch (this.selected.transaction) {
+            case 1: {
+              const temp = { date: startDate, value: value };
+              this.graphValues.push(_.cloneDeep(temp));
+              const t = moment(startDate);
+              startDate = t.add(1, 'days')['_d'];
+              break;
+            }
+            case 2: {
+              const temp = { date: startDate, value: value };
+              this.graphValues.push(_.cloneDeep(temp));
+              const newHour = startDate.getHours() + 1;
+              startDate = startDate.setHours(newHour);
+              startDate = new Date(startDate);
+              break;
+            }
+            case 3: {
+              if (startMin > 60) {
+                break;
+              }
+              const temp = { date: startMin, value: value };
+              this.graphValues.push(_.cloneDeep(temp));
+              startMin = startMin + 1;
+              break;
+            }
           }
-          const temp = { date: startMin, value: value };
-          this.graphValues.push(_.cloneDeep(temp));
-          startMin = startMin + 1;
-          break;
-        }
-      }
+        });
 
-    });
+        if (key === 'successfulTransaction') {
+          this.data[0].values = this.graphValues;
+        } else if (key === 'errorTransaction') {
+          this.data[2].values = this.graphValues;
+        } else if (key === 'inProgressTransaction') {
+          this.data[1].values = this.graphValues;
+        } else if (key === 'totalTransaction') {
+          this.data[3].values = this.graphValues;
+        }
+
+      }
+    }
+
+    console.log(this.data);
 
     this.options = _.cloneDeep(this.chartOption);
     if (this.selected.transaction === 1) {
-
       this.options.chart.xAxis.tickValues = [];
       this.options.chart.xAxis.tickFormat = function (d) {
         return d3.time.format('%d %b')(new Date(d));
@@ -153,8 +181,6 @@ export class HomeComponent implements OnInit {
         return d;
       };
     }
-    this.data[0].values = this.graphValues;
-    this.drawLinechart = true;
   }
 
   updateRouteQueryParam() {
