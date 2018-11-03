@@ -55,8 +55,6 @@ export class HomeComponent implements OnInit {
   };
 
   selected: any;
-  graphValues: any = [];
-  // drawLinechart: Boolean = false;
   @ViewChild('nvd3LineGraph') nvd3LineGraph: any;
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -104,35 +102,33 @@ export class HomeComponent implements OnInit {
 
   generateGraphValues(data: Array<any>[]) {
     this.updateRouteQueryParam();
+    let graphValues = [];
     for (const key in data) {
       if (data.hasOwnProperty(key)) {
 
-        this.graphValues = [];
+        graphValues = [];
         let startDate = this.selected.start.date['_d'];
         let startMin = 0;
         _.each(data[key], (value) => {
+          const temp = { date: startDate, value: value };
           switch (this.selected.transaction) {
             case 1: {
-              const temp = { date: startDate, value: value };
-              this.graphValues.push(_.cloneDeep(temp));
+              graphValues.push(temp);
               const t = moment(startDate);
               startDate = t.add(1, 'days')['_d'];
               break;
             }
             case 2: {
-              const temp = { date: startDate, value: value };
-              this.graphValues.push(_.cloneDeep(temp));
-              const newHour = startDate.getHours() + 1;
-              startDate = startDate.setHours(newHour);
-              startDate = new Date(startDate);
+              graphValues.push(temp);
+              const t = moment(startDate);
+              startDate = t.add(1, 'hours')['_d'];
               break;
             }
             case 3: {
               if (startMin > 60) {
                 break;
               }
-              const temp = { date: startMin, value: value };
-              this.graphValues.push(_.cloneDeep(temp));
+              graphValues.push({ date: startMin, value: value });
               startMin = startMin + 1;
               break;
             }
@@ -140,27 +136,29 @@ export class HomeComponent implements OnInit {
         });
 
         if (key === 'successfulTransaction') {
-          this.data[0].values = this.graphValues;
+          this.data[0].values = graphValues;
         } else if (key === 'errorTransaction') {
-          this.data[2].values = this.graphValues;
+          this.data[2].values = graphValues;
         } else if (key === 'inProgressTransaction') {
-          this.data[1].values = this.graphValues;
+          this.data[1].values = graphValues;
         } else if (key === 'totalTransaction') {
-          this.data[3].values = this.graphValues;
+          this.data[3].values = graphValues;
         }
 
       }
     }
-
     console.log(this.data);
+    this.manipulateGraphTicks(graphValues);
+  }
 
+  manipulateGraphTicks(graphValues) {
     this.options = _.cloneDeep(this.chartOption);
     if (this.selected.transaction === 1) {
       this.options.chart.xAxis.tickValues = [];
       this.options.chart.xAxis.tickFormat = function (d) {
         return d3.time.format('%d %b')(new Date(d));
       };
-      this.graphValues.forEach(element => {
+      graphValues.forEach(element => {
         this.options.chart.xAxis.tickValues.push(element['date']);
       });
 
@@ -171,7 +169,7 @@ export class HomeComponent implements OnInit {
         return d3.time.format('%H:%M')(new Date(d));
       };
 
-      this.graphValues.forEach(element => {
+      graphValues.forEach(element => {
         this.options.chart.xAxis.tickValues.push(element['date']);
       });
 
